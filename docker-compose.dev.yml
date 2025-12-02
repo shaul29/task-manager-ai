@@ -1,0 +1,103 @@
+version: '3.8'
+
+# Development Docker Compose
+# Optimized for local development with hot-reload
+
+services:
+  # PostgreSQL Database
+  db:
+    image: postgres:15-alpine
+    container_name: taskmanager-db-dev
+    environment:
+      POSTGRES_DB: taskmanager
+      POSTGRES_USER: taskuser
+      POSTGRES_PASSWORD: devpass123
+    ports:
+      - "5432:5432"  # Exposed for local tools (pgAdmin, DBeaver, etc.)
+    volumes:
+      - postgres_data_dev:/var/lib/postgresql/data
+    networks:
+      - dev-network
+
+  # Ollama - Local LLM Server
+  ollama:
+    image: ollama/ollama:latest
+    container_name: ollama-dev
+    ports:
+      - "11434:11434"  # Exposed for local testing
+    volumes:
+      - ollama_data_dev:/root/.ollama
+    networks:
+      - dev-network
+    # Pull model on startup
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - |
+        /bin/ollama serve &
+        sleep 5
+        echo "Pulling model: ${OLLAMA_MODEL:-llama3.2:3b}..."
+        ollama pull ${OLLAMA_MODEL:-llama3.2:3b}
+        echo "Model ready! Ollama is running."
+        wait
+
+  # Ollama WebUI (for testing models)
+  ollama-webui:
+    image: ghcr.io/open-webui/open-webui:main
+    container_name: ollama-webui-dev
+    environment:
+      - OLLAMA_BASE_URL=http://ollama:11434
+    ports:
+      - "3000:8080"  # Access at http://localhost:3000
+    depends_on:
+      - ollama
+    volumes:
+      - ollama_webui_data_dev:/app/backend/data
+    networks:
+      - dev-network
+
+  # Django Backend (Development Mode)
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.dev
+    container_name: taskmanager-backend-dev
+    command: python manage.py runserver 0.0.0.0:8000
+    volumes:
+      - ./backend:/app  # Hot-reload: changes reflect immediately
+    ports:
+      - "8000:8000"  # API at http://localhost:8000
+    environment:
+      - DATABASE_URL=postgresql://taskuser:devpass123@db:5432/taskmanager
+      - SECRET_KEY=dev-secret-key-not-for-production
+      - DEBUG=True
+      - ALLOWED_HOSTS=localhost,127.0.0.1
+      - CORS_ALLOWED_ORIGINS=http://localhost:5173,http://localhost:3000
+
+      # Ollama
+      - OLLAMA_BASE_URL=http://ollama:11434
+      - OLLAMA_MODEL=${OLLAMA_MODEL:-llama3.2:3b}
+
+      # Optional: External APIs for testing
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY:-}
+      - OPENAI_API_KEY=${OPENAI_API_KEY:-}
+
+      # Cognito (for development, can use mock data)
+      - COGNITO_USER_POOL_ID=${COGNITO_USER_POOL_ID:-}
+      - COGNITO_REGION=${COGNITO_REGION:-us-east-1}
+      - COGNITO_CLIENT_ID=${COGNITO_CLIENT_ID:-}
+    depends_on:
+      - db
+      - ollama
+    networks:
+      - dev-network
+    stdin_open: true  # For interactive debugging
+    tty: true
+
+volumes:
+  postgres_data_dev:
+  ollama_data_dev:
+  ollama_webui_data_dev:
+
+networks:
+  dev-network:
+    driver: bridge

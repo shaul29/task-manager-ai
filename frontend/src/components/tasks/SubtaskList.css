@@ -1,0 +1,213 @@
+.subtask-list {
+  animation: fadeIn var(--transition-base) ease-out;
+}
+
+.subtask-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--space-4);
+}
+
+.subtask-title {
+  font-size: var(--font-size-lg);
+  font-weight: 600;
+  color: var(--gray-900);
+  margin: 0;
+}
+
+.subtask-progress-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: var(--space-2) var(--space-3);
+  background: var(--primary-100);
+  color: var(--primary-700);
+  border-radius: var(--radius-full);
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+}
+
+.subtask-progress-bar {
+  height: 6px;
+  background: var(--gray-200);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+  margin-bottom: var(--space-4);
+}
+
+.subtask-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--primary-500), var(--success));
+  border-radius: var(--radius-full);
+  transition: width var(--transition-slow) ease-out;
+}
+
+.subtasks-container {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.subtask-item {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  background: var(--gray-50);
+  border-radius: var(--radius-lg);
+  border: 2px solid transparent;
+  transition: all var(--transition-base);
+  animation: slideIn var(--transition-base) ease-out;
+}
+
+.subtask-item:hover {
+  background: white;
+  border-color: var(--primary-200);
+  box-shadow: var(--shadow-sm);
+}
+
+.subtask-item.completed {
+  opacity: 0.7;
+  background: var(--success-light);
+}
+
+.subtask-item.completed:hover {
+  opacity: 0.85;
+}
+
+/* Custom Checkbox */
+.subtask-checkbox-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.subtask-checkbox {
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
+  width: 0;
+  height: 0;
+}
+
+.checkbox-custom {
+  position: relative;
+  display: block;
+  width: 22px;
+  height: 22px;
+  background: white;
+  border: 2px solid var(--gray-300);
+  border-radius: var(--radius-sm);
+  transition: all var(--transition-base);
+}
+
+.subtask-checkbox:hover ~ .checkbox-custom {
+  border-color: var(--primary-500);
+}
+
+.subtask-checkbox:checked ~ .checkbox-custom {
+  background: var(--primary-500);
+  border-color: var(--primary-500);
+}
+
+.subtask-checkbox:checked ~ .checkbox-custom::after {
+  content: '';
+  position: absolute;
+  left: 6px;
+  top: 2px;
+  width: 6px;
+  height: 11px;
+  border: solid white;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
+
+/* Content */
+.subtask-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.subtask-item-title {
+  display: block;
+  font-weight: 500;
+  color: var(--gray-900);
+  line-height: 1.5;
+  margin-bottom: var(--space-2);
+  word-break: break-word;
+}
+
+.subtask-item.completed .subtask-item-title {
+  text-decoration: line-through;
+  color: var(--gray-600);
+}
+
+.subtask-description {
+  font-size: var(--font-size-sm);
+  color: var(--gray-600);
+  line-height: 1.6;
+  margin: 0 0 var(--space-2) 0;
+}
+
+.subtask-item.completed .subtask-description {
+  color: var(--gray-500);
+}
+
+.ai-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: var(--space-1) var(--space-2);
+  background: linear-gradient(135deg, var(--primary-500), #8b5cf6);
+  color: white;
+  border-radius: var(--radius-full);
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+}
+
+/* Loading and Empty States */
+.subtask-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-8);
+  color: var(--gray-600);
+}
+
+.no-subtasks {
+  padding: var(--space-6);
+  text-align: center;
+  background: var(--gray-50);
+  border-radius: var(--radius-lg);
+  border: 2px dashed var(--gray-300);
+}
+
+.no-subtasks p {
+  margin: 0;
+  color: var(--gray-600);
+  font-size: var(--font-size-sm);
+}
+
+.subtask-error {
+  padding: var(--space-4);
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+  .subtask-item {
+    padding: var(--space-3);
+    gap: var(--space-2);
+  }
+
+  .subtask-title {
+    font-size: var(--font-size-base);
+  }
+
+  .checkbox-custom {
+    width: 20px;
+    height: 20px;
+  }
+}

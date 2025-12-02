@@ -1,0 +1,200 @@
+.thinking-log {
+  background: linear-gradient(to bottom, var(--gray-50), white);
+  border: 2px solid var(--primary-200);
+  border-radius: var(--radius-lg);
+  padding: var(--space-5);
+  margin-top: var(--space-4);
+  box-shadow: var(--shadow-md);
+  animation: fadeIn var(--transition-base) ease-out;
+}
+
+.thinking-log-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--space-4);
+  padding-bottom: var(--space-3);
+  border-bottom: 2px solid var(--primary-100);
+}
+
+.thinking-log-title {
+  font-size: var(--font-size-lg);
+  font-weight: 600;
+  color: var(--gray-900);
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.thinking-log-status {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-full);
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  transition: all var(--transition-base);
+}
+
+.thinking-log-status.status-connecting {
+  background: var(--gray-100);
+  color: var(--gray-700);
+}
+
+.thinking-log-status.status-streaming {
+  background: var(--primary-100);
+  color: var(--primary-700);
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+.thinking-log-status.status-complete {
+  background: var(--success-light);
+  color: var(--success);
+}
+
+.thinking-log-status.status-error {
+  background: var(--error-light);
+  color: var(--error);
+}
+
+.thinking-log-content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  max-height: 400px;
+  overflow-y: auto;
+  padding-right: var(--space-2);
+}
+
+.thinking-log-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-md);
+  background: white;
+  border-left: 3px solid transparent;
+  transition: all var(--transition-base);
+}
+
+.thinking-log-item.start {
+  border-left-color: var(--primary-500);
+  background: var(--primary-50);
+}
+
+.thinking-log-item.progress {
+  border-left-color: var(--primary-400);
+  background: white;
+}
+
+.thinking-log-item.complete {
+  border-left-color: var(--success);
+  background: var(--success-light);
+}
+
+.thinking-log-item.error {
+  border-left-color: var(--error);
+  background: var(--error-light);
+}
+
+.thinking-log-item.thinking {
+  border-left-color: var(--primary-300);
+  background: var(--primary-50);
+}
+
+.log-message {
+  flex: 1;
+  font-size: var(--font-size-sm);
+  color: var(--gray-800);
+  font-weight: 500;
+  line-height: 1.5;
+}
+
+.log-step {
+  font-size: var(--font-size-xs);
+  padding: var(--space-1) var(--space-2);
+  background: var(--gray-100);
+  color: var(--gray-600);
+  border-radius: var(--radius-sm);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Thinking animation */
+.thinking-dots {
+  display: inline-flex;
+  gap: 4px;
+}
+
+.thinking-dots span {
+  animation: blink 1.4s infinite;
+  opacity: 0;
+}
+
+.thinking-dots span:nth-child(1) {
+  animation-delay: 0s;
+}
+
+.thinking-dots span:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.thinking-dots span:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+@keyframes blink {
+  0%, 20% {
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+/* Scrollbar styling */
+.thinking-log-content::-webkit-scrollbar {
+  width: 6px;
+}
+
+.thinking-log-content::-webkit-scrollbar-track {
+  background: var(--gray-100);
+  border-radius: var(--radius-sm);
+}
+
+.thinking-log-content::-webkit-scrollbar-thumb {
+  background: var(--primary-300);
+  border-radius: var(--radius-sm);
+}
+
+.thinking-log-content::-webkit-scrollbar-thumb:hover {
+  background: var(--primary-500);
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+  .thinking-log {
+    padding: var(--space-4);
+  }
+
+  .thinking-log-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-2);
+  }
+
+  .thinking-log-content {
+    max-height: 300px;
+  }
+
+  .log-step {
+    display: none;
+  }
+}
