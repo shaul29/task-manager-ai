@@ -3,6 +3,7 @@
  */
 
 import { createContext, useContext, useState, useEffect } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
 import * as cognitoService from '../services/cognito';
 
 const AuthContext = createContext(null);
@@ -19,6 +20,7 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const queryClient = useQueryClient();
 
   useEffect(() => {
     // Check if user is already logged in
@@ -42,8 +44,16 @@ export const AuthProvider = ({ children }) => {
   const signIn = async (email, password) => {
     try {
       setError(null);
+
+      // Clear cache before signing in to ensure clean slate
+      queryClient.clear();
+
       await cognitoService.signIn(email, password);
       await checkAuth();
+
+      // Invalidate all queries to force fresh fetch for new user
+      queryClient.invalidateQueries();
+
       return true;
     } catch (err) {
       setError(err.message);
@@ -67,6 +77,9 @@ export const AuthProvider = ({ children }) => {
   const signOut = () => {
     cognitoService.signOut();
     setUser(null);
+
+    // Clear all cached queries to prevent data leakage between users
+    queryClient.clear();
   };
 
   const value = {
