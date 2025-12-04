@@ -1,0 +1,12 @@
+# Production environment variables
+.env.production
+
+# Temporary files
+*.tmp
+*.log
+
+# AWS config files
+bucket-policy.json
+cloudfront-config.json
+*.pem
+*.key

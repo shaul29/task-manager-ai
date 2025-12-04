@@ -1,0 +1,30 @@
+# Environment variables (contains secrets)
+.env
+
+# SSL certificates
+letsencrypt/*.json
+letsencrypt/*.pem
+
+# SSH keys
+*.pem
+*.key
+
+# Traefik custom config (if any secrets)
+traefik/*.yml
+
+# Backup files
+*.sql
+*.sql.gz
+*.tar.gz
+*.backup
+
+# Docker volumes backup
+*.tar
+
+# Logs
+*.log
+
+# Temporary files
+*.tmp
+*.swp
+*~
