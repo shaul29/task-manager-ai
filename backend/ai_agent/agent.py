@@ -165,7 +165,7 @@ class TaskAIAgent:
             dict with 'category', 'reasoning', 'priority'
         """
         try:
-            parser = PydanticOutputParser(pydantic_object=TaskClassification)
+            parser = JsonOutputParser()
 
             prompt = ChatPromptTemplate.from_messages([
                 ("system", """You are a task classification assistant.
@@ -181,28 +181,30 @@ class TaskAIAgent:
                 - 2: Low - when time permits
                 - 1: Very Low - nice to have
 
-                Respond ONLY with valid JSON matching this structure:
-                {format_instructions}
-                """),
+                You MUST respond with ONLY a valid JSON object (no additional text) in this EXACT format:
+                {{"category": "work", "reasoning": "Brief explanation here", "priority": 3}}
+
+                Do NOT wrap it in any other structure. Do NOT add explanations before or after."""),
                 ("user", """Task Title: {title}
 
 Task Description: {description}
 
-Classify this task.""")
+Classify this task and respond with ONLY the JSON object.""")
             ])
 
             chain = prompt | self.llm | parser
 
             result = chain.invoke({
                 "title": title,
-                "description": description,
-                "format_instructions": parser.get_format_instructions()
+                "description": description
             })
 
-            # Convert Pydantic model to dict
-            result_dict = result.model_dump()
-            logger.info(f"Task classified: {result_dict['category']} (priority: {result_dict['priority']})")
-            return result_dict
+            # Validate result has required fields
+            if not all(k in result for k in ['category', 'reasoning', 'priority']):
+                raise ValueError(f"Invalid response structure: {result}")
+
+            logger.info(f"Task classified: {result['category']} (priority: {result['priority']})")
+            return result
 
         except Exception as e:
             logger.error(f"Classification failed: {e}")
@@ -225,7 +227,7 @@ Classify this task.""")
             dict with 'subtasks' (list) and 'reasoning'
         """
         try:
-            parser = PydanticOutputParser(pydantic_object=SubtaskList)
+            parser = JsonOutputParser()
 
             prompt = ChatPromptTemplate.from_messages([
                 ("system", """You are a task breakdown assistant.
@@ -240,28 +242,30 @@ Classify this task.""")
                 - Keep titles concise (3-8 words)
                 - For complex tasks, don't hesitate to create comprehensive breakdowns
 
-                Respond ONLY with valid JSON matching this structure:
-                {format_instructions}
-                """),
+                You MUST respond with ONLY a valid JSON object (no additional text) in this EXACT format:
+                {{"subtasks": [{{"title": "First subtask", "description": "Details"}}, {{"title": "Second subtask", "description": "Details"}}], "reasoning": "Brief explanation"}}
+
+                Do NOT wrap it in any other structure. Do NOT add explanations before or after."""),
                 ("user", """Task Title: {title}
 
 Task Description: {description}
 
-Break this down into subtasks.""")
+Break this down into subtasks and respond with ONLY the JSON object.""")
             ])
 
             chain = prompt | self.llm | parser
 
             result = chain.invoke({
                 "title": title,
-                "description": description,
-                "format_instructions": parser.get_format_instructions()
+                "description": description
             })
 
-            # Convert Pydantic model to dict
-            result_dict = result.model_dump()
-            logger.info(f"Generated {len(result_dict.get('subtasks', []))} subtasks")
-            return result_dict
+            # Validate result has required fields
+            if 'subtasks' not in result or not isinstance(result['subtasks'], list):
+                raise ValueError(f"Invalid response structure: {result}")
+
+            logger.info(f"Generated {len(result.get('subtasks', []))} subtasks")
+            return result
 
         except Exception as e:
             logger.error(f"Subtask generation failed: {e}")

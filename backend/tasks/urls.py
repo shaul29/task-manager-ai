@@ -11,7 +11,9 @@ router.register(r'tasks', TaskViewSet, basename='task')
 router.register(r'subtasks', SubtaskViewSet, basename='subtask')
 router.register(r'ai-analyses', AIAnalysisViewSet, basename='ai-analysis')
 
+from django.http import JsonResponse
+
 urlpatterns = [
     path('', include(router.urls)),
-    path('health/', lambda request: __import__('django.http').JsonResponse({'status': 'ok'})),
+    path('health/', lambda request: JsonResponse({'status': 'ok'})),
 ]
